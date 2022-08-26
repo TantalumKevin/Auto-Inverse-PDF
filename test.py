@@ -14,7 +14,7 @@ def Inverse(pdfPath, newPath):
         outpage.insert_image(outpage.rect,pixmap=pix)
         
     endTime_pdf2img = datetime.datetime.now()  # 结束时间
-    print('pdf转换时间=', (endTime_pdf2img - startTime_pdf2img).seconds,'s')
+    print('转换时间=', (endTime_pdf2img - startTime_pdf2img).seconds,'s')
     if os.path.exists(newPath):
         os.remove(newPath)
     pdfDoc.close()
