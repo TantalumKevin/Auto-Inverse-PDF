@@ -10,16 +10,18 @@ def Inverse(pdfPath, newPath):
     outdoc = fitz.open()    # 建立输出PDF
     for page in pdfDoc:
         pix = page.get_pixmap(dpi=600)
-        page.get_svg_image()
         img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
         img = PIL.ImageOps.invert(img)
         imgdoc = numpy.array(img)   
         (width, height,_) = imgdoc.shape
         samples = bytearray(imgdoc.tobytes())  
-        nndoc = fitz.open('png',samples) 
-        pix = fitz.Pixmap(fitz.csRGB, width, height, samples)
-        outdoc.new_page(pno=-1,width=width, height=height)
-        newpage = outdoc[-1]
+        nndoc = fitz.open("bmp",samples) 
+        pix = fitz.Pixmap(fitz.csRGB, height, width,samples)
+        pix.save("./out/2.png")
+        nndoc.save('./out/1.bmp')
+        #pix = fitz.Pixmap(fitz.csRGB, width, height, samples)
+        #outdoc.new_page(pno=-1,width=width, height=height)
+        #newpage = outdoc[-1]
         #newpage.show_pdf_page(
         pdfbytes = nndoc.convert_to_pdf()    # 使用图片创建单页的 PDF
         imgpdf = fitz.open("pdf", pdfbytes)
