@@ -1,7 +1,5 @@
 import datetime, os, fitz
 
-
-
 def Inverse(pdfPath, newPath):
     startTime_pdf2img = datetime.datetime.now()  # 开始时间
     pdfDoc = fitz.open(pdfPath)   # 打开源PDF

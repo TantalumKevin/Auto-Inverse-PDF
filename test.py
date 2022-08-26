@@ -19,7 +19,7 @@ def pyMuPDF_fitz(pdfPath, imagePath):
         rotate = int(0) # 不进行旋转
         # 每个尺寸的缩放系数为1.3，这将为我们生成分辨率提高2.6的图像。
         # 此处若是不做设置，默认图片大小为：792X612, dpi=96
-        zoom_x = 5  
+        zoom_x = 20  
         zoom_y = zoom_x
         mat = fitz.Matrix(zoom_x, zoom_y).preRotate(rotate)
         pix = page.getPixmap(matrix=mat, alpha=False)
