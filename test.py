@@ -10,6 +10,8 @@ def Inverse(pdfPath, newPath):
         pix = page.get_pixmap(dpi=600)
         pix.invert_irect()
         outdoc.new_page(pno=-1, width= page.rect.x1, height= page.rect.y1)          # 输出文件新建页
+        outpage = outdoc[-1]
+        outpage.insert_image(outpage.rect,pixmap=pix)
         
     endTime_pdf2img = datetime.datetime.now()  # 结束时间
     print('pdf转换时间=', (endTime_pdf2img - startTime_pdf2img).seconds,'s')
