@@ -52,7 +52,7 @@ def pic2pdf(imagePath, newPath):
 if __name__ == "__main__":
     pdfPath = "./PDF/陶瓷.pdf"
     newPath = "./out/反色-陶瓷.pdf"
-    imagePath = "实分析"
+    imagePath = "./out/img"
     pyMuPDF_fitz(pdfPath, imagePath)
     pic2pdf(imagePath,newPath)
 
