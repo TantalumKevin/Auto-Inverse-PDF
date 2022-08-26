@@ -1,6 +1,4 @@
-import datetime, os, numpy, fitz, PIL.ImageOps
-from xml.dom.minidom import Document 
-from PIL import Image
+import datetime, os, fitz
 
 
 
@@ -10,22 +8,9 @@ def Inverse(pdfPath, newPath):
     outdoc = fitz.open()    # 建立输出PDF
     for page in pdfDoc:
         pix = page.get_pixmap(dpi=600)
-        img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
-        img = PIL.ImageOps.invert(img)
-        imgdoc = numpy.array(img)   
-        (width, height,_) = imgdoc.shape
-        samples = bytearray(imgdoc.tobytes())  
-        nndoc = fitz.open("bmp",samples) 
-        pix = fitz.Pixmap(fitz.csRGB, height, width,samples)
-        pix.save("./out/2.png")
-        nndoc.save('./out/1.bmp')
-        #pix = fitz.Pixmap(fitz.csRGB, width, height, samples)
-        #outdoc.new_page(pno=-1,width=width, height=height)
-        #newpage = outdoc[-1]
-        #newpage.show_pdf_page(
-        pdfbytes = nndoc.convert_to_pdf()    # 使用图片创建单页的 PDF
-        imgpdf = fitz.open("pdf", pdfbytes)
-        outdoc.insertPDF(imgpdf)          # 将当前页插入文档
+        pix.invert_irect()
+        outdoc.new_page(pno=-1, width= page.rect.x1, height= page.rect.y1)          # 输出文件新建页
+        
     endTime_pdf2img = datetime.datetime.now()  # 结束时间
     print('pdf转换时间=', (endTime_pdf2img - startTime_pdf2img).seconds,'s')
     if os.path.exists(newPath):
