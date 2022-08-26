@@ -1,60 +1,38 @@
-import datetime
-import os
-
+import datetime, os, numpy, fitz, PIL.ImageOps
+from xml.dom.minidom import Document 
 from PIL import Image
-import PIL.ImageOps  
-import glob
-
-import fitz
 
 
 
-def pyMuPDF_fitz(pdfPath, imagePath):
+def Inverse(pdfPath, newPath):
     startTime_pdf2img = datetime.datetime.now()  # 开始时间
-
-    print("imagePath=" + imagePath)
-    pdfDoc = fitz.open(pdfPath)   # 打开pdf
-    for pg in range(pdfDoc.pageCount):
-        page = pdfDoc[pg] #取出指定页
-        rotate = int(0) # 不进行旋转
-        # 每个尺寸的缩放系数为1.3，这将为我们生成分辨率提高2.6的图像。
-        # 此处若是不做设置，默认图片大小为：792X612, dpi=96
-        zoom_x = 5  
-        zoom_y = zoom_x
-        mat = fitz.Matrix(zoom_x, zoom_y).preRotate(rotate)
-        pix = page.getPixmap(matrix=mat, alpha=False)
+    pdfDoc = fitz.open(pdfPath)   # 打开源PDF
+    outdoc = fitz.open()    # 建立输出PDF
+    for page in pdfDoc:
+        pix = page.get_pixmap(dpi=600)
+        page.get_svg_image()
         img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
         img = PIL.ImageOps.invert(img)
-
-        if not os.path.exists(imagePath):  # 判断存放图片的文件夹是否存在
-            os.makedirs(imagePath)  # 若图片文件夹不存在就创建
-
-        img.save(imagePath + '/' + 'images_%s.png' % pg, "PNG")
-        print("<<转换进度>>\t"+str(100*pg/pdfDoc.pageCount)+"%", flush=True)
- 
+        imgdoc = numpy.array(img)   
+        (width, height,_) = imgdoc.shape
+        samples = bytearray(imgdoc.tobytes())  
+        nndoc = fitz.open('png',samples) 
+        pix = fitz.Pixmap(fitz.csRGB, width, height, samples)
+        outdoc.new_page(pno=-1,width=width, height=height)
+        newpage = outdoc[-1]
+        #newpage.show_pdf_page(
+        pdfbytes = nndoc.convert_to_pdf()    # 使用图片创建单页的 PDF
+        imgpdf = fitz.open("pdf", pdfbytes)
+        outdoc.insertPDF(imgpdf)          # 将当前页插入文档
     endTime_pdf2img = datetime.datetime.now()  # 结束时间
-    print('pdf转换时间=', (endTime_pdf2img - startTime_pdf2img).seconds)
-
-
-def pic2pdf(imagePath, newPath):
-  doc = fitz.open()
-  imgs = len(glob.glob(imagePath + "/*"))
-  for img in range(imgs): # 读取图片，确保按文件名排序
-    img = imagePath + '/images_{}.png'.format(img)
-    print("添加页面"+str(img))
-    imgdoc = fitz.open(img)         # 打开图片
-    pdfbytes = imgdoc.convertToPDF()    # 使用图片创建单页的 PDF
-    imgpdf = fitz.open("pdf", pdfbytes)
-    doc.insertPDF(imgpdf)          # 将当前页插入文档
-  if os.path.exists(newPath):
-    os.remove(newPath)
-  doc.save(newPath)          # 保存pdf文件
-  doc.close()
+    print('pdf转换时间=', (endTime_pdf2img - startTime_pdf2img).seconds,'s')
+    if os.path.exists(newPath):
+        os.remove(newPath)
+    pdfDoc.close()
+    outdoc.save(newPath)          # 保存pdf文件
+    outdoc.close()
 
 if __name__ == "__main__":
-    pdfPath = "实分析.pdf"
-    imagePath = "实分析"
-    newPath = "new实分析.pdf"
-    pyMuPDF_fitz(pdfPath, imagePath)
-    pic2pdf(imagePath,newPath)
-
+    pdfPath = "./PDF/陶瓷.pdf"
+    newPath = "./out/反色-陶瓷.pdf"
+    Inverse(pdfPath, newPath)
