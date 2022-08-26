@@ -2,7 +2,7 @@
 
 ## 介绍
 本项目目的在于实现自动化PDF内容反色生成，以节省油墨或夜间护眼
-详细开发描述请见[微信公众号]()、[CSDN]()
+详细开发描述请见[微信公众号]()、[CSDN](https://blog.csdn.net/TantalumKevin/article/details/126553147)、[知乎](https://zhuanlan.zhihu.com/p/558337061)
 
 ## 使用教程
 使用
