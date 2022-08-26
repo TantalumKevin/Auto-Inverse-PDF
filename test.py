@@ -38,7 +38,9 @@ def pyMuPDF_fitz(pdfPath, imagePath):
 
 def pic2pdf(imagePath, newPath):
   doc = fitz.open()
-  for img in sorted(glob.glob(imagePath + "/*")): # 读取图片，确保按文件名排序
+  imgs = len(glob.glob(imagePath + "/*"))
+  for img in range(imgs): # 读取图片，确保按文件名排序
+    img = imagePath + '/images_{}.png'.format(img)
     print("添加页面"+str(img))
     imgdoc = fitz.open(img)         # 打开图片
     pdfbytes = imgdoc.convertToPDF()    # 使用图片创建单页的 PDF
